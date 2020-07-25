@@ -1,8 +1,13 @@
 import socket
+import logging
 import rubicon.objc as objc
 from contextlib import closing
 from threading import Semaphore
 from PyObjCTools import AppHelper
+from gevent.pywsgi import WSGIServer
+from geventwebsocket.handler import WebSocketHandler
+from geventwebsocket.logging import create_logger
+
 
 class _CallAfter:
     def __init__(self):
@@ -27,3 +32,12 @@ def find_free_port():
         s.bind(('', 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
+
+def serve_wsgi(host, port, app, quiet=False):
+    server = WSGIServer((host, port), app, handler_class=WebSocketHandler)
+    if not quiet:
+        server.logger = create_logger('geventwebsocket.logging')
+        server.logger.setLevel(logging.INFO)
+        server.logger.addHandler(logging.StreamHandler())
+    server.logger.info(f'Listening on http://{host}:{port}/\nHit Ctrl-C to quit.\n')
+    server.serve_forever()

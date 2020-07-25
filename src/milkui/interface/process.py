@@ -1,14 +1,9 @@
-import bottle
-import logging
 import json
+import bottle
 from threading import Thread
-from .utils import find_free_port, call_after
-from .api import *
-from bottle import request, abort
-from gevent.pywsgi import WSGIServer
 from geventwebsocket import WebSocketError
-from geventwebsocket.handler import WebSocketHandler
-from geventwebsocket.logging import create_logger
+from .api import *
+from .utils import find_free_port, call_after, serve_wsgi
 
 class Process:
     def __init__(self, app, server, api, port=0):
@@ -33,7 +28,6 @@ class Process:
             while True:
                 try:
                     msg = wsock.receive()
-                    # print(msg)
                     if msg is not None:
                         msg = json.loads(msg)
                         event, params = self._extract_event(**msg)
@@ -57,50 +51,9 @@ class Process:
                     else: break
                 except WebSocketError:
                     break
-        # websocket
-        # @server.post('/milk/dialog/info')
-        # def info_dialog():
-        #     AppHelper.callAfter(app.openFileDialog) # fix not main thread calling error
-        
-        # @server.post('/milk/dialog/question')
-        # def question_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-
-        # @server.post('/milk/dialog/confirm')
-        # def confirm_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-        
-        # @server.post('/milk/dialog/error')
-        # def error_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-        
-        # @server.post('/milk/dialog/stack_trace')
-        # def stack_trace_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-        
-        # @server.post('/milk/dialog/open_file')
-        # def open_file_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-        
-        # @server.post('/milk/dialog/save_file')
-        # def save_file_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-        
-        # @server.post('/milk/dialog/select_folder')
-        # def select_folder_dialog():
-        #     AppHelper.callAfter(app.openFileDialog)
-
-    def _serve_wsgi(self, host, port, app, quiet=False):
-        server = WSGIServer((host, port), app, handler_class=WebSocketHandler)
-        if not quiet:
-            server.logger = create_logger('geventwebsocket.logging')
-            server.logger.setLevel(logging.INFO)
-            server.logger.addHandler(logging.StreamHandler())
-        server.logger.info(f'Listening on http://{host}:{port}/\nHit Ctrl-C to quit.\n')
-        server.serve_forever()
     
     def _load_server(self):
-        Thread(target=self._serve_wsgi, kwargs={'host':'127.0.0.1', 'port':self.port, 'app':self.server, 'quiet':False}, daemon=True).start()
+        Thread(target=serve_wsgi, kwargs={'host':'127.0.0.1', 'port':self.port, 'app':self.server, 'quiet':False}, daemon=True).start()
     
     def run(self):
         self._load_app()

@@ -1,12 +1,8 @@
-import os
 import toga
-from toga import Group
-from toga.style import Pack
-import bottle
-import json
+import milkui.resources
+from os import path
 
-
-STATIC_FOLDER = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'resources')
+STATIC_FOLDER = path.dirname(milkui.resources.__file__)
 
 class WebView(toga.WebView):
     def __init__(self, *args, **kwargs):
@@ -23,52 +19,42 @@ class Milk(toga.App):
         self.token = '32323'
         self.title = title if title else self.formal_name
         self.on_exit = lambda _: self.on_destroy()
-        
-        # toga.MainWindow()
-        # self.window2 = toga.Window()
-        # self.window2.show()
-        # self.window2.hidden = True
-        # self.main_window2.content = self.webview
-        # self.main_window2.show()
-    
-
 
     def invoke_js(self, sender):
         """
             invoke javascript for communication
         """
-        with open(os.path.join(STATIC_FOLDER, 'axios.min.js')) as f1, open(os.path.join(STATIC_FOLDER, 'invoke.js')) as f2:
-            js = '\n'.join([f1.read(), f2.read().replace('{MilkAppPort}', str(self.port)).replace('{MilkAppToken}', self.token)])
-            print(self.port)
+        with open(path.join(STATIC_FOLDER, 'invoke.js')) as f:
+            js = f.read().replace('{MilkAppPort}', str(self.port)).replace('{MilkAppToken}', self.token)
         self.webview.invoke_javascript(js)
+    
+    def on_key_down(self, *args, **kwargs):
+        """
+            key down event for shortcut
+        """
+        pass
 
-    def openFileDialog(self):
-        try:
-            fname = self.main_window.open_file_dialog(
-                title="Open file with Toga",
-                multiselect=False
-            )
-            if fname is not None:
-                print( "File to open:" + fname)
-            else:
-                print("No file selected!")
-        except ValueError:
-            print("Open file dialog was canceled")
-    
-    
-    def watchEvent(self, *args, **kwargs):
-        print(args, kwargs)
-        self.openFileDialog()
+    def on_mount(self):
+        """
+            start call function
+        """
+        pass
+
+    def on_destroy(self):
+        """
+            exit call function
+        """
+        pass
 
     def set_menu_bar(self, menu):
         groups = {
-            'App': Group.APP,
-            'File': Group.FILE,
-            'Edit': Group.EDIT,
-            'View': Group.VIEW,
-            'Commands': Group.COMMANDS,
-            'Window': Group.WINDOW,
-            'Help': Group.HELP
+            'App': toga.Group.APP,
+            'File': toga.Group.FILE,
+            'Edit': toga.Group.EDIT,
+            'View': toga.Group.VIEW,
+            'Commands': toga.Group.COMMANDS,
+            'Window': toga.Group.WINDOW,
+            'Help': toga.Group.HELP
         }
         for item in menu:
             section = 0
@@ -93,25 +79,14 @@ class Milk(toga.App):
     def set_tray_icon(self, icon, menu):
         pass
 
-    def on_mount(self):
-        pass
-
-    def on_destroy(self):
-        pass
-
     def startup(self):
-        self.webview = WebView(style=Pack(flex=1))
+        self.webview = WebView(style=toga.style.Pack(flex=1))
         self.webview.url = f"http://localhost:{self.port}/"
-        self.webview.on_key_down = self.watchEvent
+        self.webview.on_key_down = self.on_key_down
         self.webview.on_webview_load = self.invoke_js
 
         self.main_window = toga.Window()
         self.main_window.content = self.webview
-        # self.button = toga.Button('Save File', on_press=self.openFileDialog)
         self.on_mount()
-        # self.add_background_task
         self.main_window.show()
-        # self.openFileDialog()
-        # self.webview.url = f"http://localhost:{self.port}/"
-        # self.add_background_task(self.waitEvent)
     
