@@ -12,7 +12,7 @@ class WebView(toga.WebView):
         self.invoke_javascript("document.dispatchEvent(new CustomEvent('milkJavaScriptEvent', {detail: {id: '%s'} }));" % (event_id))
 
 
-class Milk(toga.App):
+class MilkUI(toga.App):
     def __init__(self, port, title=None):
         toga.App.__init__(self)
         self.port = port
