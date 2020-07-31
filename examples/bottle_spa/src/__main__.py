@@ -1,4 +1,8 @@
-from bottle_spa.app import main
+from milkui.interface.process import Process
+from .app import HelloWorld
+from .server import app
+# import api
+
 
 if __name__ == '__main__':
-    main().main_loop()
+    Process(app=HelloWorld, server=app, api=None).run()

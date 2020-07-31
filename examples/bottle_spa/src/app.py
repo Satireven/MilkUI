@@ -1,11 +1,11 @@
 """
 bottle single page application example app
 """
-from milk.interface.app import Milk
+from milkui.interface.app import MilkUI
 
-class HelloWorld(Milk):
+class HelloWorld(MilkUI):
     def __init__(self, *args, **kwargs):
-        Milk.__init__(self, *args, **kwargs)
+        MilkUI.__init__(self, *args, **kwargs)
 
     def on_mount(self):
         self.menu = [
