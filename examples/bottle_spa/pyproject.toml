@@ -9,9 +9,9 @@ author_email = "milkui@example.com"
 
 [tool.briefcase.app.bottle_spa]
 formal_name = "Bottle Single Page Application"
-description = "bottle single page application example app"
-icon = "src/resources/bottle_spa"
-sources = ['src']
+description = "Bottle single page application example"
+icon = "src/bottle_spa/resources/bottle_spa"
+sources = ['src/bottle_spa']
 requires = []
 
 

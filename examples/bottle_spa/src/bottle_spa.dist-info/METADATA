@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Briefcase-Version: 0.3.3
+Name: bottle_spa
+Formal-Name: Bottle Single Page Application
+App-ID: com.example.bottle_spa
+Version: 0.0.1
+Home-page: https://example.com/bottle_spa
+Author: MilkUI
+Author-email: milkui@example.com
+Summary: Bottle single page application example

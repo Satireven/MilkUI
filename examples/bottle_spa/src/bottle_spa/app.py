@@ -1,9 +1,10 @@
 """
-bottle single page application example app
+Bottle single page application example
 """
 from milkui.interface.app import MilkUI
 
-class HelloWorld(MilkUI):
+
+class BottleSinglePageApplication(MilkUI):
     def __init__(self, *args, **kwargs):
         MilkUI.__init__(self, *args, **kwargs)
 
@@ -59,10 +60,7 @@ class HelloWorld(MilkUI):
         ]
         self.set_menu_bar(self.menu)
         self.main_window.size = (1200, 800)
-        self.main_window.title = 'Hello World'
+        self.main_window.title = 'Bottle Single Page Application'
 
     def on_destroy(self):
         print('exit')
-
-
-
